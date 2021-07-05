@@ -12,11 +12,17 @@ let thirdimgEl = document.getElementById('thirdimg');
 let prod = [];
 let attempt = 1;
 let mAttempt = 25;
+let votesOnChart = []; //for chart
+let viewsOnChart = []; //for chart
+let productName = []; // for chart
+
 function Products(prodName) {
   this.prName = prodName.split('.')[0];
   this.img = 'img/' + prodName;
   this.votes = 0;
   this.views = 0;
+  productName.push(this.prName);
+
   prod.push(this);
 
 }
@@ -40,25 +46,25 @@ let firstIndex ;
 let secondIndex ;
 let thirdIndex ;
 
+
+let shown = [];
 function renderRandImg() {
   firstIndex = randIndex();
   secondIndex = randIndex();
   thirdIndex = randIndex();
 
-  while (firstIndex === secondIndex || secondIndex === thirdIndex || firstIndex === thirdIndex) {
+
+
+  while (firstIndex === secondIndex || secondIndex === thirdIndex || firstIndex === thirdIndex || shown.includes(firstIndex) || shown.includes(secondIndex) || shown.includes(thirdIndex)) {
     firstIndex = randIndex();
     secondIndex = randIndex();
     thirdIndex = randIndex();
 
   }
-  //   while (secondIndex ===thirdIndex) {
-  //     secondIndex = randIndex();
+  shown = [firstIndex,secondIndex,thirdIndex];
+  console.log(shown);
 
-  //   }
-  //   while (firstIndex=== thirdIndex) {
-  //     firstIndex = randIndex();
 
-  //   }
 
   firstimgEl.setAttribute('src', prod[firstIndex].img);
   secondimgEl.setAttribute('src', prod[secondIndex].img);
@@ -77,6 +83,7 @@ function renderRandImg() {
   prod[firstIndex].views++;
   prod[secondIndex].views++;
   prod[thirdIndex].views++;
+
 }
 renderRandImg();
 let button = document.createElement('button');
@@ -89,11 +96,16 @@ function clbutton(event){
     liEl.textContent = `${prod[i].prName} has ${prod[i].votes} votes and ${prod[i].views} views .`;
     ulEl.appendChild(liEl);
     containerEl.appendChild(ulEl);
+    votesOnChart.push(prod[i].votes);
+    viewsOnChart.push(prod[i].views);
+
   }
 
-
+  chartRender();
 
 }
+
+
 
 firstimgEl.addEventListener('click', handClicks);
 secondimgEl.addEventListener('click', handClicks);
@@ -125,12 +137,59 @@ function handClicks(event) {
     button.addEventListener('click',clbutton);
     containerEl.appendChild(button);
 
+
     firstimgEl.removeEventListener('click',handClicks);
     secondimgEl.removeEventListener('click',handClicks);
     thirdimgEl.removeEventListener('click',handClicks);
 
+
   }
   attempt++;
+}
+
+function chartRender(){
+
+  let ctx = document.getElementById('myChart').getContext('2d');
+  let myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: productName,
+      datasets: [{
+        label: 'Votes',
+        data: votesOnChart,
+        backgroundColor: [
+          'rgba(255, 159, 64, 0.2)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+
+        ],
+        borderWidth: 1
+      },
+      {
+        label: 'Views',
+        data: viewsOnChart,
+        backgroundColor: [
+
+          'rgba(54, 162, 235, 0.2)',
+
+        ],
+        borderColor: [
+
+          'rgba(255, 206, 86, 1)',
+
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
 }
 
 
