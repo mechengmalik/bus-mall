@@ -4,10 +4,6 @@ let containerEl = document.getElementById('container');
 let firstimgEl = document.getElementById('firstimg');
 let secondimgEl = document.getElementById('secondimg');
 let thirdimgEl = document.getElementById('thirdimg');
-// let ulEl = document.getElementById('results');
-// firstimgEl.appendChild(containerEl);
-// secondimgEl.appendChild(containerEl);
-// thirdimgEl.appendChild(containerEl);
 
 let prod = [];
 let attempt = 1;
@@ -15,6 +11,9 @@ let mAttempt = 25;
 let votesOnChart = []; //for chart
 let viewsOnChart = []; //for chart
 let productName = []; // for chart
+Products.allData = [];
+
+
 
 function Products(prodName) {
   this.prName = prodName.split('.')[0];
@@ -24,12 +23,13 @@ function Products(prodName) {
   productName.push(this.prName);
 
   prod.push(this);
+  Products.allData.push(this);
+  console.log([prod]);
+
 
 }
-let prodImages = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'water-can.jpg', 'wine-glass.jpg'];
-// new Products(
-//     prodImages[0]
-// )
+let prodImages = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg', 'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg', 'water-can.jpg', 'wine-glass.jpg'];
+
 
 for (let i = 0; i < prodImages.length; i++) {
   new Products(prodImages[i]);
@@ -42,9 +42,11 @@ function randIndex() {
 
 }
 
-let firstIndex ;
-let secondIndex ;
-let thirdIndex ;
+
+
+let firstIndex;
+let secondIndex;
+let thirdIndex;
 
 
 let shown = [];
@@ -61,8 +63,8 @@ function renderRandImg() {
     thirdIndex = randIndex();
 
   }
-  shown = [firstIndex,secondIndex,thirdIndex];
-  console.log(shown);
+  shown = [firstIndex, secondIndex, thirdIndex];
+  // console.log(shown);
 
 
 
@@ -84,20 +86,58 @@ function renderRandImg() {
   prod[secondIndex].views++;
   prod[thirdIndex].views++;
 
+
 }
+
+
+
+
+function saveData() {
+  let data = JSON.stringify(Products.allData);
+  localStorage.setItem('key1', data);
+}
+
+
+function fromLocStrge() {
+  let returnData = localStorage.getItem('key1');
+  let returnObject = JSON.parse(returnData);
+  
+  if (returnObject!== null) {
+    // Products.allData = returnObject;
+    for (let i = 0; i < returnObject.length; i++) {
+      
+      Products.allData[i].views = returnObject[i].views;
+      Products.allData[i].votes = returnObject[i].votes;
+
+    }
+
+
+  }
+  // console.log(Products.allData);
+
+
+  // renderRandImg();
+}
+
+
+
+
 renderRandImg();
 let button = document.createElement('button');
 
-function clbutton(event){
+function clbutton(event) {
   let ulEl = document.getElementById('results');
 
   for (let i = 0; i < prod.length; i++) {
     let liEl = document.createElement('li');
+    liEl.textContent = '';
     liEl.textContent = `${prod[i].prName} has ${prod[i].votes} votes and ${prod[i].views} views .`;
     ulEl.appendChild(liEl);
     containerEl.appendChild(ulEl);
     votesOnChart.push(prod[i].votes);
     viewsOnChart.push(prod[i].views);
+    // Products.allData.push(prod[i].votes);
+    // Products.allData.push(prod[i].views);
 
   }
 
@@ -122,6 +162,7 @@ function handClicks(event) {
     } else if (votedImg === 'secondimg') {
 
       prod[secondIndex].votes++;
+      // console.log(prod[secondIndex].votes++)
 
     }
     else if (votedImg === 'thirdimg') {
@@ -132,22 +173,23 @@ function handClicks(event) {
     renderRandImg();
 
   } else {
+    saveData();
 
-    button.textContent='show result';
-    button.addEventListener('click',clbutton);
+    button.textContent = 'show result';
+    button.addEventListener('click', clbutton);
     containerEl.appendChild(button);
 
 
-    firstimgEl.removeEventListener('click',handClicks);
-    secondimgEl.removeEventListener('click',handClicks);
-    thirdimgEl.removeEventListener('click',handClicks);
+    firstimgEl.removeEventListener('click', handClicks);
+    secondimgEl.removeEventListener('click', handClicks);
+    thirdimgEl.removeEventListener('click', handClicks);
 
 
   }
   attempt++;
 }
 
-function chartRender(){
+function chartRender() {
 
   let ctx = document.getElementById('myChart').getContext('2d');
   let myChart = new Chart(ctx, {
@@ -194,4 +236,4 @@ function chartRender(){
 
 
 
-
+fromLocStrge();
