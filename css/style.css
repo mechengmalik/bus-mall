@@ -49,4 +49,23 @@
     margin-top: 2%;
 
   }
+  .note{
+    color: red;
+    transform: translateX(150px);
+  transition: 5s;
+  }
+  img{
+  
+    
+      width: 250px;
+      height: 250px;
+      margin: 50px;
+      object-fit: cover;
+      border: 2px solid red;
+    
+  }
+  img:hover {
+    transform: rotate(-45deg);
+   transition: 5s;
+  }
   
